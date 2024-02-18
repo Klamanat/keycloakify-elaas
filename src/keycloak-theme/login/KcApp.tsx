@@ -4,6 +4,7 @@ import Fallback, { type PageProps } from "keycloakify/login";
 import type { KcContext } from "./kcContext";
 import { useI18n } from "./i18n";
 import Template from "./Template";
+import EmailCodeForm from "./pages/EmailCodeForm";
 
 const Login = lazy(() => import("./pages/Login"));
 // If you can, favor register-user-profile.ftl over register.ftl, see: https://docs.keycloakify.dev/realtime-input-validation
@@ -51,6 +52,7 @@ export default function KcApp(props: { kcContext: KcContext; }) {
                     // Removes those pages in you project. They are included to show you how to implement keycloak pages
                     // that are not yes implemented by Keycloakify. 
                     // See: https://docs.keycloakify.dev/limitations#some-pages-still-have-the-default-theme.-why
+                    case "email-code-form.ftl": return <EmailCodeForm {...{ kcContext, i18n, Template, classes }} doUseDefaultCss={true} />;
                     case "my-extra-page-1.ftl": return <MyExtraPage1 {...{ kcContext, i18n, Template, classes }} doUseDefaultCss={true} />;
                     case "my-extra-page-2.ftl": return <MyExtraPage2 {...{ kcContext, i18n, Template, classes }} doUseDefaultCss={true} />;
                     // We choose to use the default Template for the Info page and to download the theme resources.
