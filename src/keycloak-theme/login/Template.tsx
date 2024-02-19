@@ -6,10 +6,12 @@ import { type TemplateProps } from "keycloakify/login/TemplateProps";
 import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
 import type { KcContext } from "./kcContext";
 import type { I18n } from "./i18n";
-import logo from "./assets/logo.svg"
-import warnings from "./assets/warnings.svg"
-import info from "./assets/info.svg"
-import bg from "./assets/bg.jpg"
+import logo from "./assets/logo.svg";
+import warnings from "./assets/warnings.svg";
+import info from "./assets/info.svg";
+import bg from "./assets/bg.jpg";
+import eyeClose from "./assets/eye_close.svg"
+import eye from "./assets/eye.svg"
 
 export default function Template(props: TemplateProps<KcContext, I18n>) {
     const {
@@ -46,6 +48,83 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
         return null;
     }
 
+    const host = 'https://wordpress-uat.elaas.pub'
+    const today = new Date()
+
+    async function init() {
+        // news
+        const news = await (await fetch(`${host}/wp-json/root/v1/news`)).json()
+
+        // settings
+        const settings = await (await fetch(`${host}/wp-json/root/v1/e-laas_setting`)).json()
+
+        const newslist = document.getElementById('newslist')
+        const loadingnews = document.getElementById('loadingnews')
+        const loadingprepare = document.getElementById('loadingprepare')
+        const loadingresolve = document.getElementById('loadingresolve')
+        const preparelist = document.getElementById('preparelist')
+        const resolvelist = document.getElementById('resolvelist')
+
+        loadingnews?.remove()
+        removeAllChildNodes(newslist)
+
+        news.map((item: any) => {
+            const isNew = Date.parse(new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7).toDateString()) < Date.parse(new Date(item.post_date).toDateString())
+            newslist?.appendChild(createLink(item.post_title, `${host}/${item.post_type}/${item.post_name}`, isNew))
+        })
+
+        loadingprepare?.remove()
+        removeAllChildNodes(preparelist)
+        settings['prepare-to-use'].map((item: any) => preparelist?.appendChild(createLink(item['prepare-title'], item['prepare-link'], false)))
+
+        loadingresolve?.remove()
+        removeAllChildNodes(resolvelist)
+        settings['resolve-problem'].map((item: any) => resolvelist?.appendChild(createLink(item['resolve-title'], item['resolve-link'], false)))
+
+        const eyeWrapper: any = document.getElementById('eye-wrapper')
+
+        eyeWrapper.addEventListener('mouseover', toggleEye)
+        eyeWrapper.addEventListener('mouseleave', toggleEye)
+    }
+
+    function createLink(title: string, href: string, isNew: boolean) {
+        const element = document.createElement('li')
+        if (isNew)
+            element.classList.add('new')
+
+        const a = document.createElement('a')
+        a.appendChild(document.createTextNode(title))
+        a.setAttribute('href', href)
+        element.appendChild(a)
+        return element
+    }
+
+    function removeAllChildNodes(parent: any) {
+        while (parent.firstChild) {
+            parent.removeChild(parent.firstChild);
+        }
+    }
+
+    function toggleEye() {
+        const eyeIconElm: any = document.getElementById('eye-icon')
+        const passwordElm: any = document.getElementById('password')
+
+        switch (eyeIconElm.dataset.eyeStatus) {
+            case 'on':
+                eyeIconElm.dataset.eyeStatus = 'off'
+                eyeIconElm.src = `${eyeClose}`
+                passwordElm.setAttribute('type', 'password')
+                break
+            case 'off':
+                eyeIconElm.dataset.eyeStatus = 'on'
+                eyeIconElm.src = `${eye}`
+                passwordElm.setAttribute('type', 'text')
+                break
+        }
+    }
+
+    init()
+
     return (
         <main className="flex min-h-full">
             <aside id="login" className="flex flex-1 flex-col justify-center py-11 px-3 sm:px-6 lgx:flex-none md:px-14 shadow-x relative z-10">
@@ -58,8 +137,8 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                         </p>
                     </div>
                     <div className="mt-6">
-                        {displayMessage && message && message.type === "success" && <div style={{ minHeight: "43px" }} id="errorWrapper">
-                            <div id="error" className="[ font-normal text-required text-sm ] flex items-center my-1 gap-2.5 appearance-none outline-none [ rounded-md ] pb-1 pt-0" style={{ visibility: "hidden" }}>
+                        {displayMessage && message && message.type === "error" && <div style={{ minHeight: "43px" }} id="errorWrapper">
+                            <div id="error" className="[ font-normal text-required text-sm ] flex items-center my-1 gap-2.5 appearance-none outline-none [ rounded-md ] pb-1 pt-0">
                                 <img src={warnings} alt="แจ้งเตือน" />
                                 <span className="text-required">กรุณาตรวจสอบรหัสผู้ใช้หรือรหัสผ่านให้ถูกต้อง</span>
                             </div>
