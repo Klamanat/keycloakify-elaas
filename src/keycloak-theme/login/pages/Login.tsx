@@ -21,9 +21,9 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
         classes
     });
 
-    const { social, realm, url, usernameHidden, login, auth, registrationDisabled } = kcContext;
+    const { social, realm, url, registrationDisabled, login } = kcContext;
 
-    const { msg, msgStr } = i18n;
+    const { msg } = i18n;
 
     const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
 
@@ -33,10 +33,6 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
         setIsLoginButtonDisabled(true);
 
         const formElement = e.target as HTMLFormElement;
-
-        //NOTE: Even if we login with email Keycloak expect username and password in
-        //the POST request.
-        formElement.querySelector("input[name='email']")?.setAttribute("name", "username");
 
         formElement.submit();
     });
@@ -50,7 +46,7 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
                 !registrationDisabled
             }
             displayWide={realm.password && social.providers !== undefined}
-            headerNode={msg("doLogIn")}
+            headerNode="ระบบบันทึกบัญชีขององค์กรปกครองส่วนท้องถิ่น ( Local Administrative Accounting System )"
             infoNode={
                 <div id="kc-registration">
                     <span>
@@ -71,132 +67,42 @@ export default function Login(props: PageProps<Extract<KcContext, { pageId: "log
                     )}
                 >
                     {realm.password && (
-                        // <form id="kc-form-login" onSubmit={onSubmit} action={url.loginAction} method="post">
-                        //     <div className={getClassName("kcFormGroupClass")}>
-                        //         {!usernameHidden &&
-                        //             (() => {
-                        //                 const label = !realm.loginWithEmailAllowed
-                        //                     ? "username"
-                        //                     : realm.registrationEmailAsUsername
-                        //                         ? "email"
-                        //                         : "usernameOrEmail";
-
-                        //                 const autoCompleteHelper: typeof label = label === "usernameOrEmail" ? "username" : label;
-
-                        //                 return (
-                        //                     <>
-                        //                         <label htmlFor={autoCompleteHelper} className={getClassName("kcLabelClass")}>
-                        //                             {msg(label)}
-                        //                         </label>
-                        //                         <input
-                        //                             tabIndex={1}
-                        //                             id={autoCompleteHelper}
-                        //                             className={getClassName("kcInputClass")}
-                        //                             //NOTE: This is used by Google Chrome auto fill so we use it to tell
-                        //                             //the browser how to pre fill the form but before submit we put it back
-                        //                             //to username because it is what keycloak expects.
-                        //                             name={autoCompleteHelper}
-                        //                             defaultValue={login.username ?? ""}
-                        //                             type="text"
-                        //                             autoFocus={true}
-                        //                             autoComplete="off"
-                        //                         />
-                        //                     </>
-                        //                 );
-                        //             })()}
-                        //     </div>
-                        //     <div className={getClassName("kcFormGroupClass")}>
-                        //         <label htmlFor="password" className={getClassName("kcLabelClass")}>
-                        //             {msg("password")}
-                        //         </label>
-                        //         <input
-                        //             tabIndex={2}
-                        //             id="password"
-                        //             className={getClassName("kcInputClass")}
-                        //             name="password"
-                        //             type="password"
-                        //             autoComplete="off"
-                        //         />
-                        //     </div>
-                        //     <div className={clsx(getClassName("kcFormGroupClass"), getClassName("kcFormSettingClass"))}>
-                        //         <div id="kc-form-options">
-                        //             {realm.rememberMe && !usernameHidden && (
-                        //                 <div className="checkbox">
-                        //                     <label>
-                        //                         <input
-                        //                             tabIndex={3}
-                        //                             id="rememberMe"
-                        //                             name="rememberMe"
-                        //                             type="checkbox"
-                        //                             {...(login.rememberMe === "on"
-                        //                                 ? {
-                        //                                     "checked": true
-                        //                                 }
-                        //                                 : {})}
-                        //                         />
-                        //                         {msg("rememberMe")}
-                        //                     </label>
-                        //                 </div>
-                        //             )}
-                        //         </div>
-                        //         <div className={getClassName("kcFormOptionsWrapperClass")}>
-                        //             {realm.resetPasswordAllowed && (
-                        //                 <span>
-                        //                     <a tabIndex={5} href={url.loginResetCredentialsUrl}>
-                        //                         {msg("doForgotPassword")}
-                        //                     </a>
-                        //                 </span>
-                        //             )}
-                        //         </div>
-                        //     </div>
-                        //     <div id="kc-form-buttons" className={getClassName("kcFormGroupClass")}>
-                        //         <input
-                        //             type="hidden"
-                        //             id="id-hidden-input"
-                        //             name="credentialId"
-                        //             {...(auth?.selectedCredential !== undefined
-                        //                 ? {
-                        //                     "value": auth.selectedCredential
-                        //                 }
-                        //                 : {})}
-                        //         />
-                        //         <input
-                        //             tabIndex={4}
-                        //             className={clsx(
-                        //                 getClassName("kcButtonClass"),
-                        //                 getClassName("kcButtonPrimaryClass"),
-                        //                 getClassName("kcButtonBlockClass"),
-                        //                 getClassName("kcButtonLargeClass")
-                        //             )}
-                        //             name="login"
-                        //             id="kc-login"
-                        //             type="submit"
-                        //             value={msgStr("doLogIn")}
-                        //             disabled={isLoginButtonDisabled}
-                        //         />
-                        //     </div>
-                        // </form>
-                        <form id="form-login" onSubmit={onSubmit} action="${url.loginAction}" method="POST" className="space-y-6">
-                        <div className="space-y-1">
-                            <label htmlFor="username" className="block text-sm font-normal text-black">รหัสผู้ใช้ <span className="required">*</span></label>
-                            <div className="mt-1 flex items-center relative">
-                                <input id="username" name="username" type="text" required className="block appearance-none placeholder-gray-400 border-slate-300 border outline-none [ rounded-md ]" />
-                            </div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <label htmlFor="password" className="block text-sm font-normal text-black">รหัสผ่าน <span className="required">*</span></label>
-                            <div className="mt-1 flex items-center relative">
-                                <input id="password" name="password" type="password" required className="block appearance-none placeholder-gray-400 border-slate-300 border outline-none [ rounded-md ]" />
+                        <form id="form-login" onSubmit={onSubmit} action={url.loginAction} method="POST" className="space-y-6">
+                            <div className="space-y-1">
+                                <label htmlFor="username" className="block text-sm font-normal text-black">รหัสผู้ใช้ <span className="required">*</span></label>
+                                <div className="mt-1 flex items-center relative">
+                                    <input
+                                        id="username"
+                                        name="username"
+                                        defaultValue={login.username ?? ""}
+                                        type="text"
+                                        autoFocus={true}
+                                        autoComplete="off"
+                                        required
+                                        className="block appearance-none placeholder-gray-400 border-slate-300 border outline-none [ rounded-md ]" />
+                                </div>
                             </div>
 
-                            <div className="flex justify-end relative" style={{ transform: "translate(-11px, -39px)", float: "right", cursor: "pointer" }} id="eye-wrapper">
-                                <img src={eyeClose} alt="แสดงรหัสผ่าน" style={{ width: "25px", height: "25px" }} id="eye-icon" data-eye-status="off" />
-                            </div>
-                        </div>
+                            <div className="space-y-1">
+                                <label htmlFor="password" className="block text-sm font-normal text-black">รหัสผ่าน <span className="required">*</span></label>
+                                <div className="mt-1 flex items-center relative">
+                                    <input
+                                        tabIndex={2}
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="off"
+                                        required
+                                        className="block appearance-none placeholder-gray-400 border-slate-300 border outline-none [ rounded-md ]" />
+                                </div>
 
-                        <button id="submitBtn" type="submit" className="m-auto flex justify-center button-primary [ p-3 ] [ text-base font-normal text-white ]" disabled={isLoginButtonDisabled}>เข้าสู่ระบบ</button>
-                    </form>
+                                <div className="flex justify-end relative" style={{ transform: "translate(-11px, -39px)", float: "right", cursor: "pointer" }} id="eye-wrapper">
+                                    <img src={eyeClose} alt="แสดงรหัสผ่าน" style={{ width: "25px", height: "25px" }} id="eye-icon" data-eye-status="off" />
+                                </div>
+                            </div>
+
+                            <button id="submitBtn" type="submit" className="m-auto flex justify-center button-primary [ p-3 ] [ text-base font-normal text-white ]" disabled={isLoginButtonDisabled}>เข้าสู่ระบบ</button>
+                        </form>
                     )}
                 </div>
                 {realm.password && social.providers !== undefined && (

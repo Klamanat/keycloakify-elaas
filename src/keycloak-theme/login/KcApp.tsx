@@ -1,4 +1,6 @@
 import "./KcApp.css";
+import "./style.css";
+import "./uno.css";
 import { lazy, Suspense } from "react";
 import Fallback, { type PageProps } from "keycloakify/login";
 import type { KcContext } from "./kcContext";
@@ -19,8 +21,8 @@ const Info = lazy(() => import("keycloakify/login/pages/Info"));
 // https://github.com/keycloak/keycloak/blob/11.0.3/themes/src/main/resources/theme/keycloak/login/theme.properties
 const classes = {
     // NOTE: The classes are defined in ./KcApp.css
-    "kcHtmlClass": "my-root-class",
-    "kcHeaderWrapperClass": "my-color my-font"
+    // "kcHtmlClass": "my-root-class",
+    // "kcHeaderWrapperClass": "my-color my-font"
 } satisfies PageProps["classes"];
 
 export default function KcApp(props: { kcContext: KcContext; }) {
